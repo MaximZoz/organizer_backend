@@ -86,7 +86,7 @@ namespace dotnetClaimAuthorization.Controllers
                     }
 
                     return await System.Threading.Tasks.Task.FromResult(new ResponseModel(ResponseCode.OK,
-                        "User has been Registered", null));
+                        "Вы зарегистрированы", null));
                 }
 
                 return await System.Threading.Tasks.Task.FromResult(new ResponseModel(ResponseCode.Error, "",
@@ -115,7 +115,7 @@ namespace dotnetClaimAuthorization.Controllers
                     var roles = (await _userManager.GetRolesAsync(user)).ToList();
 
                     allUserDTO.Add(new UserDTO(user.FullName, user.Id, user.Email, user.UserName, user.DateCreated,
-                        roles));
+                        roles, ""));
                 }
 
                 return await System.Threading.Tasks.Task.FromResult(new ResponseModel(ResponseCode.OK, "", allUserDTO));
@@ -140,8 +140,10 @@ namespace dotnetClaimAuthorization.Controllers
                     var role = (await _userManager.GetRolesAsync(user)).ToList();
                     if (role.Any(x => x == "User"))
                     {
+                        var quantityNotes = _context.Tasks.Where(t => t.UserId.ToString() == user.Id).ToList().Count
+                            .ToString();
                         allUserDTO.Add(new UserDTO(user.FullName, user.Id, user.Email, user.UserName, user.DateCreated,
-                            role));
+                            role, quantityNotes));
                     }
                 }
 
@@ -173,18 +175,25 @@ namespace dotnetClaimAuthorization.Controllers
                     {
                         var appUser = await _userManager.FindByEmailAsync(model.Email);
                         var roles = (await _userManager.GetRolesAsync(appUser)).ToList();
+
                         var user = new UserDTO(appUser.FullName, appUser.Id, appUser.Email, appUser.UserName,
                             appUser.DateCreated,
-                            roles);
+                            roles, "");
                         user.Token = GenerateToken(appUser, roles);
 
                         return await System.Threading.Tasks.Task.FromResult(
-                            new ResponseModel(ResponseCode.OK, "", user));
+                            new ResponseModel(ResponseCode.OK, $"Добро пожаловать, {appUser.FullName}!", user));
+                    }
+
+                    if (result.IsLockedOut)
+                    {
+                        return await System.Threading.Tasks.Task.FromResult(new ResponseModel(ResponseCode.Error,
+                            "Ваша учетная запись заблокирована администратором", null));
                     }
                 }
 
                 return await System.Threading.Tasks.Task.FromResult(new ResponseModel(ResponseCode.Error,
-                    "invalid Email or password", null));
+                    "Неверная почта или пароль", null));
             }
             catch (Exception ex)
             {
@@ -222,7 +231,7 @@ namespace dotnetClaimAuthorization.Controllers
                 }
 
                 return await System.Threading.Tasks.Task.FromResult(new ResponseModel(ResponseCode.Error,
-                    "something went wrong please try again later", null));
+                    "Что-то пошло не так. Пожалуйста, повторите попытку позже", null));
             }
             catch (Exception ex)
             {

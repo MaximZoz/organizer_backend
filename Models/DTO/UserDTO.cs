@@ -6,7 +6,7 @@ namespace Models.DTO
     public class UserDTO
     {
         public UserDTO(string fullName, string id, string email, string userName, DateTime dateCreated,
-            List<string> roles)
+            List<string> roles, string quantityNotes)
         {
             FullName = fullName;
             Email = email;
@@ -14,6 +14,7 @@ namespace Models.DTO
             Id = id;
             DateCreated = dateCreated;
             Roles = roles;
+            QuantityNotes = quantityNotes;
         }
 
         public string FullName { get; set; }
@@ -23,5 +24,6 @@ namespace Models.DTO
         public DateTime DateCreated { get; set; }
         public string Token { get; set; }
         public List<string> Roles { get; set; }
+        public string QuantityNotes { get; set; }
     }
 }
