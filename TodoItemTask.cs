@@ -9,5 +9,7 @@ namespace dotnetClaimAuthorization
         public string Title { get; set; }
         public DateTime Date { get; set; }
         public Guid UserId { get; set; }
+
+        public Boolean Completed { get; set; }
     }
 }

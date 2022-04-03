@@ -337,6 +337,18 @@ namespace dotnetClaimAuthorization.Controllers
         }
 
         [AllowAnonymous]
+        [HttpPut("SuccessTasks/{id}")]
+        public async Task<object> SuccessTasks(Guid id)
+
+        {
+            var task = _context.Tasks.FirstOrDefault(t => t.Id == id);
+            if (task != null) task.Completed = true;
+            await _context.SaveChangesAsync();
+            return await System.Threading.Tasks.Task.FromResult(new ResponseModel(ResponseCode.OK, "good", null
+            ));
+        }
+
+        [AllowAnonymous]
         [HttpGet("GetTaskMonth/{userId}/{date}")]
         public async Task<object> GetTaskMonth(Guid userId, string date)
 
