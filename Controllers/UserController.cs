@@ -115,7 +115,7 @@ namespace dotnetClaimAuthorization.Controllers
                     var roles = (await _userManager.GetRolesAsync(user)).ToList();
 
                     allUserDTO.Add(new UserDTO(user.FullName, user.Id, user.Email, user.UserName, user.DateCreated,
-                        roles, ""));
+                        roles, "", ""));
                 }
 
                 return await System.Threading.Tasks.Task.FromResult(new ResponseModel(ResponseCode.OK, "", allUserDTO));
@@ -140,10 +140,14 @@ namespace dotnetClaimAuthorization.Controllers
                     var role = (await _userManager.GetRolesAsync(user)).ToList();
                     if (role.Any(x => x == "User"))
                     {
-                        var quantityNotes = _context.Tasks.Where(t => t.UserId.ToString() == user.Id).ToList().Count
+                        var quantityNotes = _context.Tasks.Where(t => t.UserId.ToString() == user.Id && !t.Сonfirm)
+                            .ToList().Count
+                            .ToString();
+                        var quantityConfirmNotes = _context.Tasks
+                            .Where(t => t.UserId.ToString() == user.Id && t.Сonfirm).ToList().Count
                             .ToString();
                         allUserDTO.Add(new UserDTO(user.FullName, user.Id, user.Email, user.UserName, user.DateCreated,
-                            role, quantityNotes));
+                            role, quantityNotes, quantityConfirmNotes));
                     }
                 }
 
@@ -178,7 +182,7 @@ namespace dotnetClaimAuthorization.Controllers
 
                         var user = new UserDTO(appUser.FullName, appUser.Id, appUser.Email, appUser.UserName,
                             appUser.DateCreated,
-                            roles, "");
+                            roles, "", "");
                         user.Token = GenerateToken(appUser, roles);
 
                         return await System.Threading.Tasks.Task.FromResult(
@@ -344,7 +348,29 @@ namespace dotnetClaimAuthorization.Controllers
             var task = _context.Tasks.FirstOrDefault(t => t.Id == id);
             if (task != null) task.Completed = true;
             await _context.SaveChangesAsync();
-            return await System.Threading.Tasks.Task.FromResult(new ResponseModel(ResponseCode.OK, "good", null
+            return await System.Threading.Tasks.Task.FromResult(new ResponseModel(ResponseCode.OK, "good", task
+            ));
+        }
+
+        [HttpPut("RefuseTasks/{id}")]
+        public async Task<object> RefuseTasks(Guid id)
+
+        {
+            var task = _context.Tasks.FirstOrDefault(t => t.Id == id);
+            if (task != null) task.Completed = false;
+            await _context.SaveChangesAsync();
+            return await System.Threading.Tasks.Task.FromResult(new ResponseModel(ResponseCode.OK, "good", task
+            ));
+        }
+
+        [HttpPut("ConfirmTasks/{id}")]
+        public async Task<object> ConfirmTasks(Guid id)
+
+        {
+            var task = _context.Tasks.FirstOrDefault(t => t.Id == id);
+            if (task != null) task.Сonfirm = true;
+            await _context.SaveChangesAsync();
+            return await System.Threading.Tasks.Task.FromResult(new ResponseModel(ResponseCode.OK, "good", task
             ));
         }
 

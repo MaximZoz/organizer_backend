@@ -11,5 +11,6 @@ namespace dotnetClaimAuthorization
         public Guid UserId { get; set; }
 
         public Boolean Completed { get; set; }
+        public Boolean Сonfirm { get; set; }
     }
 }
