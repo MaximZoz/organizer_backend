@@ -351,7 +351,7 @@ namespace dotnetClaimAuthorization.Controllers
             return await System.Threading.Tasks.Task.FromResult(new ResponseModel(ResponseCode.OK, "good", task
             ));
         }
-
+        [AllowAnonymous]
         [HttpPut("RefuseTasks/{id}")]
         public async Task<object> RefuseTasks(Guid id)
 
@@ -362,13 +362,24 @@ namespace dotnetClaimAuthorization.Controllers
             return await System.Threading.Tasks.Task.FromResult(new ResponseModel(ResponseCode.OK, "good", task
             ));
         }
-
+        [AllowAnonymous]
         [HttpPut("ConfirmTasks/{id}")]
         public async Task<object> ConfirmTasks(Guid id)
 
         {
             var task = _context.Tasks.FirstOrDefault(t => t.Id == id);
             if (task != null) task.Сonfirm = true;
+            await _context.SaveChangesAsync();
+            return await System.Threading.Tasks.Task.FromResult(new ResponseModel(ResponseCode.OK, "good", task
+            ));
+        }
+        [AllowAnonymous]
+        [HttpPut("PriorityTasks/{id}/{index}")]
+        public async Task<object> PriorityTasks(Guid id, int index)
+
+        {
+            var task = _context.Tasks.FirstOrDefault(t => t.Id == id);
+            if (task != null) task.Priority = index;
             await _context.SaveChangesAsync();
             return await System.Threading.Tasks.Task.FromResult(new ResponseModel(ResponseCode.OK, "good", task
             ));

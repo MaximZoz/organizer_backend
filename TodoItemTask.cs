@@ -12,5 +12,7 @@ namespace dotnetClaimAuthorization
 
         public Boolean Completed { get; set; }
         public Boolean Сonfirm { get; set; }
+
+        public int Priority { get; set; }
     }
 }
